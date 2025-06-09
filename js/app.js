@@ -1,13 +1,15 @@
-// Add CryptoJS library
-const script = document.createElement('script');
-script.src = 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js';
-document.head.appendChild(script);
+// Add CryptoJS library - Removed dynamic loading as it's included in index.html
+// const script = document.createElement('script');
+// script.src = 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js';
+// document.head.appendChild(script);
 
-// Wait for CryptoJS to load
-script.onload = () => {
-    // Ensure the DOM is fully loaded before initializing the app
-    document.addEventListener('DOMContentLoaded', initializeApp);
-};
+// Wait for CryptoJS to load - Adjusted to rely on static loading
+// script.onload = () => {
+//     // Ensure the DOM is fully loaded before initializing the app
+//     document.addEventListener('DOMContentLoaded', initializeApp);
+// };
+
+document.addEventListener('DOMContentLoaded', initializeApp); // Call initializeApp directly on DOMContentLoaded
 
 function initializeApp() {
     const dropZone = document.getElementById('dropZone');
@@ -21,6 +23,10 @@ function initializeApp() {
     const expiryTime = document.getElementById('expiryTime');
     const downloadModal = document.getElementById('downloadModal');
 
+    console.log("Initializing app...");
+    console.log("documentInput element:", documentInput);
+    console.log("selectFileBtn element:", selectFileBtn);
+
     // Ensure all modals are hidden on initialization
     howItWorksModal.classList.remove('active');
     shareModal.classList.remove('active');
@@ -28,10 +34,12 @@ function initializeApp() {
 
     // File upload handling
     selectFileBtn.addEventListener('click', () => {
+        console.log("Select File button clicked!"); // Debugging
         documentInput.click();
     });
 
     documentInput.addEventListener('change', handleFileSelect);
+    console.log("Change listener added to documentInput."); // Debugging
 
     // Drag and drop handling
     dropZone.addEventListener('dragover', (e) => {
