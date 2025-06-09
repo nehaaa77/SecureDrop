@@ -5,7 +5,8 @@ document.head.appendChild(script);
 
 // Wait for CryptoJS to load
 script.onload = () => {
-    initializeApp();
+    // Ensure the DOM is fully loaded before initializing the app
+    document.addEventListener('DOMContentLoaded', initializeApp);
 };
 
 function initializeApp() {
@@ -326,7 +327,7 @@ function showDownloadModal(fileName, fileType, decryptedContent) {
 
 // Enhanced share link handling
 window.addEventListener('load', async () => {
-    initializeApp(); // Initialize the app elements and event listeners
+    // initializeApp(); // Removed: This is now handled by DOMContentLoaded
     
     const urlParams = new URLSearchParams(window.location.search);
     const shareId = urlParams.get('share');
