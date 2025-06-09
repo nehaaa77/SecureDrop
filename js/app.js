@@ -18,6 +18,12 @@ function initializeApp() {
     const shareLink = document.getElementById('shareLink');
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const expiryTime = document.getElementById('expiryTime');
+    const downloadModal = document.getElementById('downloadModal');
+
+    // Ensure all modals are hidden on initialization
+    howItWorksModal.classList.remove('active');
+    shareModal.classList.remove('active');
+    downloadModal.classList.remove('active');
 
     // File upload handling
     selectFileBtn.addEventListener('click', () => {
@@ -45,13 +51,14 @@ function initializeApp() {
 
     // Modal handling
     howItWorksBtn.addEventListener('click', () => {
-        howItWorksModal.style.display = 'block';
+        howItWorksModal.classList.add('active');
     });
 
     document.querySelectorAll('.close-modal').forEach(button => {
         button.addEventListener('click', () => {
-            howItWorksModal.style.display = 'none';
-            shareModal.style.display = 'none';
+            howItWorksModal.classList.remove('active');
+            shareModal.classList.remove('active');
+            downloadModal.classList.remove('active');
         });
     });
 
@@ -68,10 +75,13 @@ function initializeApp() {
     // Close modals when clicking outside
     window.addEventListener('click', (e) => {
         if (e.target === howItWorksModal) {
-            howItWorksModal.style.display = 'none';
+            howItWorksModal.classList.remove('active');
         }
         if (e.target === shareModal) {
-            shareModal.style.display = 'none';
+            shareModal.classList.remove('active');
+        }
+        if (e.target === downloadModal) {
+            downloadModal.classList.remove('active');
         }
     });
 }
@@ -128,7 +138,7 @@ async function handleFile(file) {
         
         // Show share modal
         document.getElementById('shareLink').value = shareUrl;
-        document.getElementById('shareModal').style.display = 'block';
+        document.getElementById('shareModal').classList.add('active');
         
         // Start expiry countdown
         startExpiryCountdown(documentData.expiryTime);
@@ -301,7 +311,7 @@ function showDownloadModal(fileName, fileType, decryptedContent) {
 
     downloadFileName.textContent = fileName;
     downloadFileType.textContent = fileType;
-    downloadModal.style.display = 'block';
+    downloadModal.classList.add('active');
 
     downloadFileBtn.onclick = () => {
         const link = document.createElement('a');
@@ -310,7 +320,7 @@ function showDownloadModal(fileName, fileType, decryptedContent) {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        downloadModal.style.display = 'none';
+        downloadModal.classList.remove('active');
     };
 }
 

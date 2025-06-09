@@ -201,9 +201,13 @@ nav {
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
-    display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* When modal is active, it will use this */
+.modal.active {
+    display: flex;
 }
 
 .modal-content {
