@@ -115,6 +115,7 @@ async function handleFile(file) {
             id: shareId,
             fileName: file.name,
             fileType: file.type,
+            fileSize: file.size,
             encryptedContent: encryptedFileString, // Store encrypted content as string
             hash: documentHash, // Store the hash for verification
             timestamp: Date.now(),
@@ -123,6 +124,7 @@ async function handleFile(file) {
         };
         
         localStorage.setItem(`share_${shareId}`, JSON.stringify(documentData));
+        console.log(`Stored share_${shareId}:`, documentData);
         
         // Show share modal
         document.getElementById('shareLink').value = shareUrl;
@@ -261,12 +263,14 @@ async function encryptFileToString(file, key) {
 
 async function decryptFile(encryptedContent, key) {
     try {
+        console.log("Attempting to decrypt with content:", encryptedContent, "and key:", key);
         const decrypted = CryptoJS.AES.decrypt(encryptedContent, key);
         if (decrypted.sigBytes < 0) { // Check for invalid decryption
             throw new Error('Decryption failed: Invalid key or corrupted data (sigBytes issue)');
         }
         return decrypted.toString(CryptoJS.enc.Utf8);
     } catch (error) {
+        console.error("Decryption error:", error);
         throw new Error('Decryption failed: Invalid key or corrupted data. ' + error.message);
     }
 }
@@ -318,8 +322,13 @@ window.addEventListener('load', async () => {
     const shareId = urlParams.get('share');
     const encryptionKey = urlParams.get('key');
     
+    console.log(`URL Params - shareId: ${shareId}, encryptionKey: ${encryptionKey}`);
+    
     if (shareId && encryptionKey) {
-        const shareData = localStorage.getItem(`share_${shareId}`);
+        const localStorageKey = `share_${shareId}`;
+        const shareData = localStorage.getItem(localStorageKey);
+        console.log(`Retrieved from localStorage (${localStorageKey}):`, shareData);
+
         if (shareData) {
             const data = JSON.parse(shareData);
             
@@ -345,11 +354,13 @@ window.addEventListener('load', async () => {
                 }
             } else {
                 alert('This share has expired.');
-                localStorage.removeItem(`share_${shareId}`); // Clean up expired share
+                localStorage.removeItem(localStorageKey); // Clean up expired share
             }
         } else {
             alert('Share not found. It might have expired or been deleted.');
         }
+    } else if (shareId || encryptionKey) { // Handle cases where one is missing but the other is present
+        alert("Invalid share link. Both share ID and encryption key are required.");
     }
     
     // Update documents list on load
