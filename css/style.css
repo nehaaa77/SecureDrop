@@ -190,126 +190,139 @@ nav {
     gap: 1rem;
 }
 
-/* Modal Styles */
+/* Modals */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 1000;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content {
-    background-color: white;
-    padding: 2rem;
+    background-color: var(--background-color);
+    margin: auto;
+    padding: 30px;
     border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    max-width: 500px;
     width: 90%;
-    max-width: 600px;
-    margin: 2rem auto;
-    position: relative;
-}
-
-.modal h2 {
-    margin-bottom: 1.5rem;
-    color: var(--text-color);
-}
-
-.steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.step {
     text-align: center;
-    padding: 1.5rem;
-    background-color: #f8fafc;
-    border-radius: 8px;
+    position: relative;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
 }
 
-.step i {
-    font-size: 2rem;
+.modal-content h2 {
+    font-size: 1.8em;
     color: var(--primary-color);
-    margin-bottom: 1rem;
+    margin-bottom: 20px;
 }
 
-.step h3 {
-    margin-bottom: 0.5rem;
+.modal-content p {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.modal-content .input-group {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.modal-content input[type="text"] {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    font-size: 1em;
+    background-color: var(--background-color);
     color: var(--text-color);
 }
 
-.step p {
-    color: #64748b;
-    font-size: 0.9rem;
-}
-
-.share-info {
-    margin-bottom: 1.5rem;
-}
-
-.share-link {
-    display: flex;
-    gap: 0.5rem;
-    margin: 1rem 0;
-}
-
-.share-link input {
-    flex: 1;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 0.9rem;
-}
-
-.share-link button {
-    padding: 0.75rem;
+.modal-content .action-btn {
+    padding: 12px 20px;
     background-color: var(--primary-color);
-    color: white;
+    color: var(--text-color-light);
     border: none;
-    border-radius: 6px;
+    border-radius: 0 8px 8px 0;
     cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
 }
 
-.expiry-info {
-    color: #64748b;
-    font-size: 0.9rem;
+.modal-content .action-btn:hover {
+    background-color: var(--primary-color-dark);
+}
+
+.modal-content .primary-btn {
+    background-color: var(--primary-color);
+    color: var(--text-color-light);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.modal-content .primary-btn:hover {
+    background-color: var(--primary-color-dark);
 }
 
 .close-modal {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 6px;
+    color: var(--text-color);
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: color 0.3s ease;
 }
 
-.close-modal:hover {
-    background-color: var(--secondary-color);
+.close-modal:hover,
+.close-modal:focus {
+    color: var(--danger-color);
+    text-decoration: none;
 }
 
-/* Responsive Design */
+/* Responsive adjustments for modals */
 @media (max-width: 768px) {
-    .container {
-        padding: 10px;
+    .modal-content {
+        padding: 20px;
+        max-width: 90%;
     }
 
-    .hero h1 {
-        font-size: 2rem;
+    .modal-content h2 {
+        font-size: 1.5em;
     }
 
-    .upload-area {
-        padding: 2rem;
+    .modal-content p {
+        font-size: 1em;
     }
 
-    .steps {
-        grid-template-columns: 1fr;
+    .modal-content .input-group {
+        flex-direction: column;
+    }
+
+    .modal-content input[type="text"] {
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .modal-content .action-btn {
+        border-radius: 8px;
+        width: 100%;
     }
 }
 

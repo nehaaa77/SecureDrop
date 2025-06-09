@@ -92,16 +92,25 @@
         <!-- Share Modal -->
         <div id="shareModal" class="modal">
             <div class="modal-content">
+                <span class="close-modal">&times;</span>
                 <h2>Share Document</h2>
-                <div class="share-info">
-                    <p>Share this link with the recipient:</p>
-                    <div class="share-link">
-                        <input type="text" id="shareLink" readonly>
-                        <button id="copyLinkBtn"><i class="fas fa-copy"></i></button>
-                    </div>
-                    <p class="expiry-info">Link expires in: <span id="expiryTime">24:00:00</span></p>
+                <p>Share this link with your recipient:</p>
+                <div class="input-group">
+                    <input type="text" id="shareLink" readonly>
+                    <button id="copyLinkBtn" class="action-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <button class="close-modal">Close</button>
+                <p>Link will expire in: <span id="expiryTime"></span></p>
+            </div>
+        </div>
+
+        <!-- Download Modal (New) -->
+        <div id="downloadModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Document Ready!</h2>
+                <p>File Name: <span id="downloadFileName"></span></p>
+                <p>File Type: <span id="downloadFileType"></span></p>
+                <button id="downloadFileBtn" class="primary-btn">Download</button>
             </div>
         </div>
     </div>

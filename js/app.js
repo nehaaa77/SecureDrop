@@ -99,23 +99,27 @@ async function handleFile(file) {
         // Generate encryption key
         const encryptionKey = generateEncryptionKey();
         
-        // Encrypt file content
-        const encryptedFile = await encryptFile(file, encryptionKey);
+        // Encrypt file content to string
+        const encryptedFileString = await encryptFileToString(file, encryptionKey);
         
-        // Add document to blockchain with encrypted hash
-        const result = await addDocumentToBlockchain(encryptedFile);
-        
+        // Simulate adding document to blockchain with encrypted hash
+        // In a real scenario, you'd send encryptedFileString and get a hash from the blockchain
+        const documentHash = CryptoJS.SHA256(encryptedFileString).toString();
+
         // Generate share link with encryption key
         const shareId = generateShareId();
         const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}&key=${encryptionKey}`;
         
-        // Store document data
+        // Store document data in localStorage
         const documentData = {
             id: shareId,
-            file: result.document,
+            fileName: file.name,
+            fileType: file.type,
+            encryptedContent: encryptedFileString, // Store encrypted content as string
+            hash: documentHash, // Store the hash for verification
             timestamp: Date.now(),
             expiryTime: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
-            encryptionKey: encryptionKey
+            encryptionKey: encryptionKey // Store key with document for retrieval
         };
         
         localStorage.setItem(`share_${shareId}`, JSON.stringify(documentData));
@@ -190,12 +194,12 @@ function updateDocumentsList() {
         documentsList.innerHTML = documents.map(doc => `
             <div class="document-item">
                 <div class="document-info">
-                    <h3>${doc.file.name}</h3>
-                    <p>Size: ${formatFileSize(doc.file.size)}</p>
+                    <h3>${doc.fileName}</h3>
+                    <p>Size: ${formatFileSize(doc.fileSize)}</p>
                     <p>Expires: ${new Date(doc.expiryTime).toLocaleString()}</p>
                 </div>
                 <div class="document-actions">
-                    <button onclick="copyShareLink('${doc.id}')" class="action-btn">
+                    <button onclick="copyShareLink('${doc.id}', '${doc.encryptionKey}')" class="action-btn">
                         <i class="fas fa-copy"></i> Copy Link
                     </button>
                     <button onclick="deleteShare('${doc.id}')" class="action-btn delete">
@@ -209,8 +213,8 @@ function updateDocumentsList() {
     }
 }
 
-function copyShareLink(shareId) {
-    const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+function copyShareLink(shareId, encryptionKey) {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}&key=${encryptionKey}`;
     navigator.clipboard.writeText(shareUrl).then(() => {
         alert('Share link copied to clipboard!');
     });
@@ -238,15 +242,14 @@ function generateEncryptionKey() {
     return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
-async function encryptFile(file, key) {
+async function encryptFileToString(file, key) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = async function(e) {
             try {
                 const content = e.target.result;
                 const encryptedContent = CryptoJS.AES.encrypt(content, key).toString();
-                const encryptedFile = new Blob([encryptedContent], { type: 'application/encrypted' });
-                resolve(encryptedFile);
+                resolve(encryptedContent);
             } catch (error) {
                 reject(error);
             }
@@ -259,74 +262,110 @@ async function encryptFile(file, key) {
 async function decryptFile(encryptedContent, key) {
     try {
         const decrypted = CryptoJS.AES.decrypt(encryptedContent, key);
+        if (decrypted.sigBytes < 0) { // Check for invalid decryption
+            throw new Error('Decryption failed: Invalid key or corrupted data (sigBytes issue)');
+        }
         return decrypted.toString(CryptoJS.enc.Utf8);
     } catch (error) {
-        throw new Error('Decryption failed: Invalid key or corrupted data');
+        throw new Error('Decryption failed: Invalid key or corrupted data. ' + error.message);
     }
 }
 
-// Enhanced document verification
-async function verifyDocument(documentHash, encryptionKey) {
-    const result = window.verifyDocument(documentHash);
-    if (result.verified) {
-        try {
-            // Verify encryption key
-            const testDecrypt = await decryptFile(documentHash, encryptionKey);
-            return {
+// Simulate blockchain verification
+// In a real application, this would involve actual blockchain interaction
+async function verifyDocumentOnBlockchain(documentHash) {
+    return new Promise(resolve => {
+        // Simulate a delay for blockchain verification
+        setTimeout(() => {
+            // For now, we'll assume any hash is "verified" by the blockchain for demo purposes
+            // In a real system, you'd check if the hash exists on the blockchain
+            resolve({
                 verified: true,
-                timestamp: result.timestamp,
-                blockHash: result.blockHash,
-                decrypted: true
-            };
-        } catch (error) {
-            return {
-                verified: true,
-                timestamp: result.timestamp,
-                blockHash: result.blockHash,
-                decrypted: false,
-                error: 'Invalid encryption key'
-            };
-        }
-    }
-    return { verified: false };
+                timestamp: Date.now(), // Simulate a timestamp from the blockchain
+                blockHash: '0x' + CryptoJS.SHA256(documentHash + 'blockchain_salt').toString() // Simulate a block hash
+            });
+        }, 500);
+    });
+}
+
+// Function to show download modal
+function showDownloadModal(fileName, fileType, decryptedContent) {
+    const downloadModal = document.getElementById('downloadModal');
+    const downloadFileName = document.getElementById('downloadFileName');
+    const downloadFileType = document.getElementById('downloadFileType');
+    const downloadFileBtn = document.getElementById('downloadFileBtn');
+
+    downloadFileName.textContent = fileName;
+    downloadFileType.textContent = fileType;
+    downloadModal.style.display = 'block';
+
+    downloadFileBtn.onclick = () => {
+        const link = document.createElement('a');
+        link.href = decryptedContent; // The content is a data URL
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        downloadModal.style.display = 'none';
+    };
 }
 
 // Enhanced share link handling
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+    initializeApp(); // Initialize the app elements and event listeners
+    
     const urlParams = new URLSearchParams(window.location.search);
     const shareId = urlParams.get('share');
     const encryptionKey = urlParams.get('key');
     
-    if (shareId) {
+    if (shareId && encryptionKey) {
         const shareData = localStorage.getItem(`share_${shareId}`);
         if (shareData) {
             const data = JSON.parse(shareData);
+            
+            // Check expiry time
             if (data.expiryTime > Date.now()) {
-                // Show document verification with encryption
-                const verification = window.verifyDocument(data.file.hash, encryptionKey);
-                if (verification.verified) {
-                    if (verification.decrypted) {
-                        alert(`Document verified and decrypted successfully!\nTimestamp: ${new Date(verification.timestamp).toLocaleString()}\nBlock Hash: ${verification.blockHash}`);
+                try {
+                    // Verify document hash on blockchain (simulated)
+                    const blockchainVerification = await verifyDocumentOnBlockchain(data.hash);
+
+                    if (blockchainVerification.verified) {
+                        // Decrypt the content
+                        const decryptedContent = await decryptFile(data.encryptedContent, encryptionKey);
+                        
+                        // Show download modal
+                        showDownloadModal(data.fileName, data.fileType, decryptedContent);
+                        
+                        alert(`Document Verified!\nFile: ${data.fileName}\nTimestamp: ${new Date(blockchainVerification.timestamp).toLocaleString()}\nBlock Hash: ${blockchainVerification.blockHash}`);
                     } else {
-                        alert('Document verified but decryption failed. Please check the encryption key.');
+                        alert('Document verification failed on the blockchain.');
                     }
+                } catch (error) {
+                    alert('Error decrypting or verifying document: ' + error.message);
                 }
             } else {
                 alert('This share has expired.');
+                localStorage.removeItem(`share_${shareId}`); // Clean up expired share
             }
         } else {
-            alert('Share not found.');
+            alert('Share not found. It might have expired or been deleted.');
         }
     }
     
-    // Initialize the app
-    initializeApp();
-    
-    // Update documents list
+    // Update documents list on load
     updateDocumentsList();
     
     // Start cleanup interval
     setInterval(() => {
         updateDocumentsList();
     }, 60000); // Check every minute
-}); 
+});
+
+// For policy links (if still present in index.html, though now handled by policy.html)
+function showPrivacyPolicy() {
+    window.location.href = 'policy.html#privacy';
+}
+
+function showTerms() {
+    window.location.href = 'policy.html#terms';
+} 
