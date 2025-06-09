@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureDrop - Anonymous Document Sharing</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>SecureDrop</span>
+                </div>
+                <div class="nav-links">
+                    <button id="howItWorksBtn">How It Works</button>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h1>Secure, Anonymous Document Sharing</h1>
+                <p>Share documents securely with blockchain verification. Files are automatically deleted after successful sharing.</p>
+            </section>
+
+            <section class="upload-section">
+                <div class="upload-container">
+                    <div class="upload-area" id="dropZone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h2>Drop your file here</h2>
+                        <p>or</p>
+                        <input type="file" id="documentInput" accept=".pdf,.doc,.docx" hidden>
+                        <button id="selectFileBtn">Select File</button>
+                        <p class="file-info">Maximum file size: 10MB</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="documents-section" id="documentsSection" style="display: none;">
+                <h2>Active Shares</h2>
+                <div class="documents-list" id="documentsList">
+                    <!-- Documents will be listed here -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2025 Netrinix Solutions. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="policy.html">Privacy Policy</a>
+                    <a href="policy.html#terms">Terms of Service</a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- How It Works Modal -->
+        <div id="howItWorksModal" class="modal">
+            <div class="modal-content">
+                <h2>How SecureDrop Works</h2>
+                <div class="steps">
+                    <div class="step">
+                        <i class="fas fa-upload"></i>
+                        <h3>1. Upload</h3>
+                        <p>Select or drag your file to upload</p>
+                    </div>
+                    <div class="step">
+                        <i class="fas fa-link"></i>
+                        <h3>2. Share</h3>
+                        <p>Get a secure link to share</p>
+                    </div>
+                    <div class="step">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>3. Verify</h3>
+                        <p>Recipient can verify document integrity</p>
+                    </div>
+                    <div class="step">
+                        <i class="fas fa-trash"></i>
+                        <h3>4. Auto-Delete</h3>
+                        <p>File is automatically deleted after sharing</p>
+                    </div>
+                </div>
+                <button class="close-modal">Got it!</button>
+            </div>
+        </div>
+
+        <!-- Share Modal -->
+        <div id="shareModal" class="modal">
+            <div class="modal-content">
+                <h2>Share Document</h2>
+                <div class="share-info">
+                    <p>Share this link with the recipient:</p>
+                    <div class="share-link">
+                        <input type="text" id="shareLink" readonly>
+                        <button id="copyLinkBtn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <p class="expiry-info">Link expires in: <span id="expiryTime">24:00:00</span></p>
+                </div>
+                <button class="close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="js/blockchain.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
